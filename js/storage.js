@@ -382,7 +382,7 @@ const StorageManager = {
                 name: 'Mẫu chấm điểm Đồ án - Mặc định',
                 description: 'Mẫu cơ bản cho bảng điểm chấm đồ án',
                 title1: 'TRƯỜNG ĐẠI HỌC CÔNG NGHỆ TP.HCM',
-                title2: 'KHOA CÔNG NGHỆ THÔNG TIN',
+                title2: '        KHOA CÔNG NGHỆ THÔNG TIN',
                 columns: ['STT', 'MÃ SV', 'Họ và tên'],
                 categoryId: defaultCategoryId
             };

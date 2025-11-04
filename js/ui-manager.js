@@ -101,10 +101,10 @@ const UIManager = {
                             <h5 class="modal-title"><i class="bi bi-table"></i> Bảng điểm CLO</h5>
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                         </div>
-                        <div class="modal-body p-4" id="result-modal-body" style="overflow-y: auto;">
+                        <div class="modal-body p-4" id="result-modal-body" style="overflow-y: auto; padding-bottom: 100px !important;">
                             <!-- Content will be rendered here -->
                         </div>
-                        <div class="modal-footer">
+                        <div class="modal-footer" style="position: sticky; bottom: 0; background: white; z-index: 10; box-shadow: 0 -2px 10px rgba(0,0,0,0.1);">
                             <button type="button" class="btn btn-success" onclick="ResultManager.exportToExcel()">
                                 <i class="bi bi-file-earmark-excel"></i> Xuất Excel
                             </button>

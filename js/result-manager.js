@@ -105,7 +105,7 @@ const ResultManager = {
     },
     
     /**
-     * Export to PDF
+     * Export to PDF (using browser print)
      */
     exportToPDF() {
         if (!this.currentScoreData || !this.currentConfig) {
@@ -114,7 +114,7 @@ const ResultManager = {
         }
         
         try {
-            const filename = ExcelExporter.exportToPDF(this.currentScoreData, {
+            ExcelExporter.exportToPDF(this.currentScoreData, {
                 results: this.currentScoreData,
                 template: this.currentConfig.template,
                 criteria: this.currentConfig.criteria,
@@ -122,11 +122,9 @@ const ResultManager = {
                 className: this.currentConfig.className,
                 groupName: this.currentConfig.groupName
             });
-            
-            UIManager.showToast(`Đã xuất file ${filename} thành công!`, 'success');
         } catch (error) {
-            console.error('Export error:', error);
-            alert('Có lỗi khi xuất file PDF: ' + error.message);
+            console.error('Export PDF error:', error);
+            alert('Có lỗi khi xuất PDF: ' + error.message);
         }
     },
     

@@ -285,7 +285,8 @@ function renderPreviewStructure(template, criteria, courseName, className, group
             if (student.isAbsent || student.score === 'V' || (typeof student.score === 'string' && student.score.toUpperCase() === 'V')) {
                 displayValue = 'V';
             } else if (typeof student.score === 'number' && !isNaN(student.score)) {
-                displayValue = student.score.toFixed(1);
+                // Format 0 as 00.0 to prevent fraud
+                displayValue = student.score === 0 ? '00.0' : student.score.toFixed(1);
             } else {
                 displayValue = ''; // Empty for null or undefined
             }
@@ -457,4 +458,54 @@ function clearGenerator() {
     ExcelHandler.clearStudentData();
     UIManager.updateStudentCountDisplay(0);
     updateRealtimePreview();
+}
+
+/**
+ * Search preview table by MSSV or Name
+ */
+function searchPreview(searchValue) {
+    const searchTerm = searchValue.toLowerCase().trim();
+    const previewTable = document.querySelector('#preview-container table');
+    
+    if (!previewTable) {
+        return;
+    }
+    
+    const rows = previewTable.querySelectorAll('tbody tr');
+    let visibleCount = 0;
+    
+    rows.forEach(row => {
+        // Get MSSV (column 2) and Name (column 3)
+        const mssvCell = row.cells[1];
+        const nameCell = row.cells[2];
+        
+        if (!mssvCell || !nameCell) {
+            return;
+        }
+        
+        const mssv = mssvCell.textContent.toLowerCase();
+        const name = nameCell.textContent.toLowerCase();
+        
+        // Check if search term matches MSSV or Name
+        if (searchTerm === '' || mssv.includes(searchTerm) || name.includes(searchTerm)) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    
+    // Show message if no results
+    const existingMessage = document.getElementById('search-no-results');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
+    
+    if (searchTerm !== '' && visibleCount === 0) {
+        const noResultsMsg = document.createElement('div');
+        noResultsMsg.id = 'search-no-results';
+        noResultsMsg.className = 'alert alert-warning mt-2';
+        noResultsMsg.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Không tìm thấy sinh viên nào phù hợp.';
+        previewTable.parentElement.appendChild(noResultsMsg);
+    }
 }

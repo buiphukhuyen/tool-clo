@@ -842,7 +842,7 @@ function exportToExcel() {
     // Title row 1 (School name)
     wsData.push(['TRƯỜNG ĐẠI HỌC CÔNG NGHỆ TP.HCM']);
     // Title row 2 (Department)
-    wsData.push(['KHOA CÔNG NGHỆ THÔNG TIN']);
+    wsData.push(['        KHOA CÔNG NGHỆ THÔNG TIN']);
     // Empty row
     wsData.push([]);
     

@@ -29,7 +29,7 @@ const ExcelExporter = {
         // Row 2: Faculty name (left aligned)
         worksheet.mergeCells(`A2:${lastColLetter}2`);
         const row2 = worksheet.getRow(2);
-        row2.getCell(1).value = template.departmentName || 'KHOA CÔNG NGHỆ THÔNG TIN';
+        row2.getCell(1).value = template.departmentName || '        KHOA CÔNG NGHỆ THÔNG TIN';
         row2.getCell(1).font = { name: 'Times New Roman', size: 11, bold: true };
         row2.getCell(1).alignment = { horizontal: 'left', vertical: 'middle' };
         row2.height = 16;
@@ -168,9 +168,12 @@ const ExcelExporter = {
                     cell.value = 'V';
                     cell.font = { name: 'Times New Roman', size: 11 };
                 } else if (typeof score === 'number') {
-                    cell.value = parseFloat(score.toFixed(1));
+                    // Format 0 as 00.0 to prevent fraud (adding 1 to make 10.0)
+                    cell.value = score === 0 ? '00.0' : parseFloat(score.toFixed(1));
                     cell.font = { name: 'Times New Roman', size: 11 };
-                    cell.numFmt = '0.0';
+                    if (score !== 0) {
+                        cell.numFmt = '0.0';
+                    }
                 } else {
                     cell.value = '';
                     cell.font = { name: 'Times New Roman', size: 11 };
@@ -186,9 +189,13 @@ const ExcelExporter = {
                 totalCell.value = 'V';
                 totalCell.font = { name: 'Times New Roman', size: 11, color: { argb: 'FFFF0000' }, bold: true };
             } else {
-                totalCell.value = parseFloat(result.originalScore.toFixed(1));
+                // Format 0 as 00.0 to prevent fraud
+                const totalScore = parseFloat(result.originalScore);
+                totalCell.value = totalScore === 0 ? '00.0' : parseFloat(result.originalScore.toFixed(1));
                 totalCell.font = { name: 'Times New Roman', size: 11, color: { argb: 'FFFF0000' }, bold: true };
-                totalCell.numFmt = '0.0';
+                if (totalScore !== 0) {
+                    totalCell.numFmt = '0.0';
+                }
             }
             totalCell.alignment = { horizontal: 'center', vertical: 'middle' };
             totalCell.border = this.getBorder();
@@ -301,31 +308,6 @@ const ExcelExporter = {
     },
     
     /**
-     * Remove Vietnamese accents for PDF compatibility
-     */
-    removeVietnameseAccents(str) {
-        if (!str) return '';
-        
-        str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, 'a');
-        str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, 'e');
-        str = str.replace(/ì|í|ị|ỉ|ĩ/g, 'i');
-        str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, 'o');
-        str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, 'u');
-        str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, 'y');
-        str = str.replace(/đ/g, 'd');
-        
-        str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, 'A');
-        str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, 'E');
-        str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, 'I');
-        str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, 'O');
-        str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, 'U');
-        str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, 'Y');
-        str = str.replace(/Đ/g, 'D');
-        
-        return str;
-    },
-    
-    /**
      * Get border style
      */
     getBorder() {
@@ -347,7 +329,7 @@ const ExcelExporter = {
         
         // Header rows
         csv += `${template.schoolName || 'TRƯỜNG ĐẠI HỌC CÔNG NGHỆ TP.HCM'}\n`;
-        csv += `${template.departmentName || 'KHOA CÔNG NGHỆ THÔNG TIN'}\n`;
+        csv += `${template.departmentName || '        KHOA CÔNG NGHỆ THÔNG TIN'}\n`;
         csv += '\n';
         csv += 'BẢNG ĐIỂM CHẤM ĐỒ ÁN\n';
         csv += `Học phần: ${courseName}    Lớp: ${className}    Nhóm: ${groupName || 'N/A'}\n`;
@@ -370,7 +352,7 @@ const ExcelExporter = {
                 if (result.isAbsent || score === 'V') {
                     csv += ',V';
                 } else if (typeof score === 'number') {
-                    csv += `,${score.toFixed(1)}`;
+                    csv += `,${score === 0 ? '00.0' : score.toFixed(1)}`;
                 } else {
                     csv += ',';
                 }
@@ -380,7 +362,8 @@ const ExcelExporter = {
             if (result.isAbsent) {
                 csv += ',V';
             } else {
-                csv += `,${result.originalScore.toFixed(1)}`;
+                const totalScore = parseFloat(result.originalScore);
+                csv += `,${totalScore === 0 ? '00.0' : result.originalScore.toFixed(1)}`;
             }
             csv += '\n';
         });
@@ -434,7 +417,7 @@ const ExcelExporter = {
         // Row 2: Faculty name
         worksheet.mergeCells(`A2:${lastColLetter}2`);
         const row2 = worksheet.getRow(2);
-        row2.getCell(1).value = template.departmentName || 'KHOA CÔNG NGHỆ THÔNG TIN';
+        row2.getCell(1).value = template.departmentName || '        KHOA CÔNG NGHỆ THÔNG TIN';
         row2.getCell(1).font = { name: 'Times New Roman', size: 11, bold: true };
         row2.getCell(1).alignment = { horizontal: 'left', vertical: 'middle' };
         row2.height = 16;
@@ -473,11 +456,17 @@ const ExcelExporter = {
             
             criteria.forEach((criterion, idx) => {
                 const score = result.criteriaScores[criterion.id];
-                row.getCell(4 + idx).value = result.isAbsent || score === 'V' ? 'V' : 
-                    (typeof score === 'number' ? parseFloat(score.toFixed(1)) : '');
+                if (result.isAbsent || score === 'V') {
+                    row.getCell(4 + idx).value = 'V';
+                } else if (typeof score === 'number') {
+                    row.getCell(4 + idx).value = score === 0 ? '00.0' : parseFloat(score.toFixed(1));
+                } else {
+                    row.getCell(4 + idx).value = '';
+                }
             });
             
-            row.getCell(totalColumns).value = result.isAbsent ? 'V' : parseFloat(result.originalScore.toFixed(1));
+            const totalScore = parseFloat(result.originalScore);
+            row.getCell(totalColumns).value = result.isAbsent ? 'V' : (totalScore === 0 ? '00.0' : parseFloat(result.originalScore.toFixed(1)));
         });
         
         // Convert to base64
@@ -542,153 +531,164 @@ const ExcelExporter = {
     },
     
     /**
-     * Export to PDF with A4 format (Portrait) - Vietnamese support using html2pdf
+     * Export to PDF using browser's print function (direct method)
      */
-    async exportToPDF(scoreData, config) {
+    exportToPDF(scoreData, config) {
         const { results, template, criteria, courseName, className, groupName } = config;
-        
-        // Generate HTML content for PDF
+        this.printToPDF(results, template, criteria, courseName, className, groupName);
+    },
+    
+    /**
+     * Print to PDF using browser's print function (fallback method)
+     */
+    printToPDF(results, template, criteria, courseName, className, groupName) {
         const htmlContent = this.generatePDFHTML(results, template, criteria, courseName, className, groupName);
         
-        // Title section
-        const pageWidth = doc.internal.pageSize.getWidth();
+        // Create new window for printing
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Bảng Điểm - ${className}</title>
+                <style>
+                    @page {
+                        size: A4 portrait;
+                        margin: 10mm;
+                    }
+                    @media print {
+                        body { margin: 0; padding: 0; }
+                        .no-print { display: none; }
+                    }
+                    body {
+                        font-family: 'Times New Roman', Times, serif;
+                        margin: 0;
+                        padding: 15px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="no-print" style="margin-bottom: 10px; padding: 10px; background: #f0f0f0; border-radius: 5px;">
+                    <strong>Hướng dẫn:</strong> Nhấn Ctrl+P (Windows) hoặc Cmd+P (Mac), chọn "Save as PDF" và nhấn "Save"
+                    <button onclick="window.print()" style="margin-left: 10px; padding: 5px 15px;">In ngay</button>
+                </div>
+                ${htmlContent}
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
         
-        // School name
-        doc.setFontSize(11);
-        doc.setFont('helvetica', 'bold');
-        doc.text(template.schoolName || 'TRUONG DAI HOC CONG NGHE TP.HCM', 14, 15);
+        // Auto print after load
+        setTimeout(() => {
+            printWindow.focus();
+            printWindow.print();
+        }, 500);
+    },
+    
+    /**
+     * Generate HTML content for PDF export
+     */
+    generatePDFHTML(results, template, criteria, courseName, className, groupName) {
+        // Escape HTML special characters
+        const escapeHtml = (text) => {
+            if (!text) return '';
+            return String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        };
         
-        // Faculty name
-        doc.text(template.departmentName || 'KHOA CONG NGHE THONG TIN', 14, 21);
-        
-        // Title
-        doc.setFontSize(13);
-        doc.text('BANG DIEM CHAM DO AN', pageWidth / 2, 32, { align: 'center' });
-        
-        // Course info
-        doc.setFontSize(11);
-        doc.setFont('helvetica', 'bold');
-        const courseInfo = `Hoc phan: ${this.removeVietnameseAccents(courseName)}   Lop: ${className}   Nhom: ${groupName || '33'}`;
-        doc.text(courseInfo, pageWidth / 2, 40, { align: 'center' });
-        
-        // Prepare table data - remove Vietnamese accents for PDF
-        const headers = [['STT', 'MA SV', 'Ho va ten']];
+        let html = `
+            <div style="font-family: 'Times New Roman', Times, serif; padding: 15px; background: white; width: 100%; box-sizing: border-box;">
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 13px; font-weight: bold; text-align: left;">${escapeHtml(template.schoolName || 'TRƯỜNG ĐẠI HỌC CÔNG NGHỆ TP.HCM')}</div>
+                    <div style="font-size: 13px; font-weight: bold; text-align: left; white-space: pre;">${escapeHtml(template.departmentName || '        KHOA CÔNG NGHỆ THÔNG TIN')}</div>
+                </div>
+                
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <div style="font-size: 16px; font-weight: bold; text-transform: uppercase;">BẢNG ĐIỂM CHẤM ĐỒ ÁN</div>
+                    <div style="font-size: 12px; font-weight: bold; margin-top: 5px;">
+                        Học phần: ${escapeHtml(courseName)} - Lớp: ${escapeHtml(className)} - Nhóm: ${escapeHtml(groupName || 'N/A')}
+                    </div>
+                </div>
+                
+                <table style="width: 100%; border-collapse: collapse; font-size: 10px; margin-top: 10px;">
+                    <thead>
+                        <tr style="background-color: #f0f0f0;">
+                            <th style="border: 1px solid #000; padding: 5px; text-align: center; font-weight: bold; width: 40px;">STT</th>
+                            <th style="border: 1px solid #000; padding: 5px; text-align: center; font-weight: bold; width: 100px;">MÃ SV</th>
+                            <th style="border: 1px solid #000; padding: 5px; text-align: center; font-weight: bold;">Họ và tên</th>
+        `;
         
         // Add criteria headers
         criteria.forEach(c => {
-            const name = c.name || c.code || 'CLO';
-            const cleanName = this.removeVietnameseAccents(name);
-            headers[0].push(`${cleanName}\n(${c.percentage}%)`);
+            const name = escapeHtml(c.name || c.code || 'CLO');
+            html += `<th style="border: 1px solid #000; padding: 5px; text-align: center; font-weight: bold; width: 60px;">${name}<br/>(${c.percentage}%)</th>`;
         });
-        headers[0].push('Tong');
         
-        // Prepare body data - remove Vietnamese accents for PDF
-        const body = [];
+        html += `<th style="border: 1px solid #000; padding: 5px; text-align: center; font-weight: bold; color: red; width: 50px;">Tổng</th>`;
+        html += `</tr></thead><tbody>`;
+        
+        // Add data rows
         results.forEach((result, index) => {
-            const row = [
-                index + 1,
-                result.mssv,
-                this.removeVietnameseAccents(result.name) // Remove accents for PDF compatibility
-            ];
+            html += `<tr>`;
+            html += `<td style="border: 1px solid #000; padding: 4px; text-align: center;">${index + 1}</td>`;
+            html += `<td style="border: 1px solid #000; padding: 4px; text-align: center;">${escapeHtml(result.mssv)}</td>`;
+            html += `<td style="border: 1px solid #000; padding: 4px 6px; text-align: left;">${escapeHtml(result.name)}</td>`;
             
-            // Add criteria scores
+            // Criteria scores
             criteria.forEach(criterion => {
                 const score = result.criteriaScores[criterion.id];
+                let scoreDisplay = '';
                 if (result.isAbsent || score === 'V') {
-                    row.push('V');
+                    scoreDisplay = '<span style="color: red; font-weight: bold;">V</span>';
                 } else if (typeof score === 'number') {
-                    row.push(score.toFixed(1));
+                    scoreDisplay = score === 0 ? '00.0' : score.toFixed(1);
                 } else {
-                    row.push('');
+                    scoreDisplay = '';
                 }
+                html += `<td style="border: 1px solid #000; padding: 4px; text-align: center;">${scoreDisplay}</td>`;
             });
             
-            // Add total
+            // Total score
+            let totalDisplay = '';
             if (result.isAbsent) {
-                row.push('V');
+                totalDisplay = '<span style="color: red; font-weight: bold;">V</span>';
             } else {
-                row.push(result.originalScore.toFixed(1));
+                const totalScore = parseFloat(result.originalScore);
+                const formattedTotal = totalScore === 0 ? '00.0' : result.originalScore.toFixed(1);
+                totalDisplay = `<span style="color: red; font-weight: bold;">${formattedTotal}</span>`;
             }
-            
-            body.push(row);
+            html += `<td style="border: 1px solid #000; padding: 4px; text-align: center;">${totalDisplay}</td>`;
+            html += `</tr>`;
         });
         
-        // Calculate optimal column widths for portrait
-        const availableWidth = pageWidth - 28; // Total width minus margins
-        const sttWidth = 10;
-        const mssvWidth = 22;
-        const nameWidth = 35;
-        const totalWidth = 12;
-        const criteriaWidth = (availableWidth - sttWidth - mssvWidth - nameWidth - totalWidth) / criteria.length;
-        
-        // Generate table
-        doc.autoTable({
-            startY: 45,
-            head: headers,
-            body: body,
-            theme: 'grid',
-            styles: {
-                font: 'helvetica',
-                fontSize: 8, // Smaller font for portrait
-                cellPadding: 1.5,
-                lineColor: [0, 0, 0],
-                lineWidth: 0.1,
-                halign: 'center',
-                valign: 'middle',
-                fontStyle: 'normal'
-            },
-            headStyles: {
-                fillColor: [240, 240, 240],
-                textColor: [0, 0, 0],
-                font: 'helvetica',
-                fontStyle: 'bold',
-                fontSize: 8,
-                halign: 'center',
-                valign: 'middle'
-            },
-            columnStyles: {
-                0: { cellWidth: sttWidth, halign: 'center' }, // STT
-                1: { cellWidth: mssvWidth, halign: 'center' }, // MSSV
-                2: { cellWidth: nameWidth, halign: 'left' },   // Name
-                // Criteria columns
-                [3 + criteria.length]: { cellWidth: totalWidth, halign: 'center', fontStyle: 'bold', textColor: [255, 0, 0] } // Total
-            },
-            didParseCell: function(data) {
-                // Bold and red for total column
-                if (data.column.index === 3 + criteria.length) {
-                    data.cell.styles.fontStyle = 'bold';
-                    data.cell.styles.textColor = [255, 0, 0];
-                }
+        html += `
+                    </tbody>
+                </table>
                 
-                // Red V for absent
-                if (data.cell.text[0] === 'V') {
-                    data.cell.styles.textColor = [255, 0, 0];
-                    data.cell.styles.fontStyle = 'bold';
-                }
-            },
-            margin: { left: 14, right: 14 },
-            tableWidth: 'auto'
-        });
+                <div style="margin-top: 20px;">
+                    <div style="text-align: right; font-style: italic; font-size: 10px; margin-bottom: 10px;">
+                        Tp.Hồ Chí Minh, ngày ..... tháng ..... năm 2025
+                    </div>
+                    <table style="width: 100%; border: none;">
+                        <tr>
+                            <td style="width: 50%; text-align: center; border: none; font-size: 11px;">
+                                <div>Giảng viên chấm 2</div>
+                            </td>
+                            <td style="width: 50%; text-align: center; border: none; font-size: 11px;">
+                                <div>Giảng viên chấm 1</div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        `;
         
-        // Add signature section - remove Vietnamese accents
-        const finalY = doc.lastAutoTable.finalY + 10;
-        
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'italic');
-        doc.text('Tp.Ho Chi Minh, ngay ..... thang ..... nam 2025', pageWidth - 14, finalY, { align: 'right' });
-        
-        doc.setFont('helvetica', 'normal');
-        doc.text('Giang vien cham 2', 40, finalY + 7, { align: 'center' });
-        doc.text('Giang vien cham 1', pageWidth - 40, finalY + 7, { align: 'center' });
-        
-        // Generate filename
-        const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-        const filename = `BangDiem_${className}_${timestamp}.pdf`;
-        
-        // Save PDF
-        doc.save(filename);
-        
-        return filename;
+        return html;
     }
 };
 

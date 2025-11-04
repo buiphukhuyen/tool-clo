@@ -20,6 +20,7 @@ const ScoreCalculator = {
         
         criteria.forEach(criterion => {
             // Điểm thô = điểm tổng
+            // Luôn hiển thị 0.0 nếu là 0 (không để trống để tránh gian lận thêm số 1 thành 10.0)
             scores[criterion.id] = this.roundToHalf(totalScore);
         });
 
@@ -261,12 +262,18 @@ const ScoreCalculator = {
 
     /**
      * Format điểm hiển thị
+     * Điểm 0 hiển thị là 00.0 để tránh gian lận thêm số 1 thành 10.0
      */
     formatScore(score) {
         if (score === null || score === undefined) return '-';
         if (score === 'V' || score === 'VẮNG') return 'V';
         if (typeof score === 'string') return score;
-        return score.toFixed(1);
+        
+        const numScore = parseFloat(score);
+        if (numScore === 0) {
+            return '00.0';
+        }
+        return numScore.toFixed(1);
     },
 
     /**
