@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tool Chấm Điểm CLO - Quản Lý Bảng Điểm Đồ Án</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-journal-check"></i> Tool Chấm Điểm CLO
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#dashboard" data-section="dashboard">
+                            <i class="bi bi-house-door"></i> Trang chủ
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#template" data-section="template">
+                            <i class="bi bi-file-earmark-spreadsheet"></i> Quản lý Mẫu chấm
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-list-check"></i> Quản lý Tiêu chí
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#categories" data-section="categories">
+                                <i class="bi bi-folder"></i> Nhóm tiêu chí
+                            </a></li>
+                            <li><a class="dropdown-item" href="#criteria" data-section="criteria">
+                                <i class="bi bi-list-check"></i> Chi tiết tiêu chí
+                            </a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#generator" data-section="generator">
+                            <i class="bi bi-calculator"></i> Tạo Bảng điểm
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#history" data-section="history">
+                            <i class="bi bi-clock-history"></i> Lịch sử
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid py-4">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section active">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="mb-4"><i class="bi bi-house-door"></i> Trang chủ</h2>
+                </div>
+            </div>
+            <div class="row g-3">
+                <!-- Stats Cards -->
+                <div class="col-md-3 col-6">
+                    <div class="card text-white bg-primary">
+                        <div class="card-body py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-title mb-0 small">Mẫu chấm</h6>
+                                    <h3 class="mb-0" id="stat-templates">0</h3>
+                                </div>
+                                <i class="bi bi-file-earmark-spreadsheet fs-2"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card text-white bg-success">
+                        <div class="card-body py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-title mb-0 small">Nhóm tiêu chí</h6>
+                                    <h3 class="mb-0" id="stat-categories">0</h3>
+                                </div>
+                                <i class="bi bi-folder fs-2"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card text-white bg-info">
+                        <div class="card-body py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-title mb-0 small">Học phần</h6>
+                                    <h3 class="mb-0" id="stat-courses">0</h3>
+                                </div>
+                                <i class="bi bi-book fs-2"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card text-white bg-warning">
+                        <div class="card-body py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-title mb-0 small">Lịch sử</h6>
+                                    <h3 class="mb-0" id="stat-history">0</h3>
+                                </div>
+                                <i class="bi bi-clock-history fs-2"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-lightning"></i> Thao tác nhanh</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <button class="btn btn-primary w-100" onclick="navigateTo('generator')">
+                                        <i class="bi bi-plus-circle"></i> Tạo bảng điểm mới
+                                    </button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-success w-100" onclick="navigateTo('template')">
+                                        <i class="bi bi-file-earmark-plus"></i> Tạo template mới
+                                    </button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-info w-100" onclick="navigateTo('history')">
+                                        <i class="bi bi-clock-history"></i> Xem lịch sử
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent History -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-clock"></i> Hoạt động gần đây</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="recent-activities" class="list-group">
+                                <div class="text-muted text-center py-3">Chưa có hoạt động nào</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories Manager Section -->
+        <section id="categories" class="content-section">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="mb-3"><i class="bi bi-folder"></i> Quản lý Nhóm Tiêu chí</h2>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Danh sách Nhóm tiêu chí</h5>
+                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#categoryModal" onclick="openCategoryModal()">
+                                <i class="bi bi-plus-circle"></i> Tạo Nhóm mới
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i> 
+                                <strong>Nhóm tiêu chí</strong> giúp bạn tổ chức các bộ tiêu chí khác nhau. 
+                                Mỗi nhóm sẽ có tổng % = 100% và được gắn với một mẫu chấm cụ thể.
+                            </div>
+                            <div id="category-list" class="table-responsive">
+                                <!-- Category list will be rendered here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Template Manager Section -->
+        <section id="template" class="content-section">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="mb-3"><i class="bi bi-file-earmark-spreadsheet"></i> Quản lý Mẫu chấm CLO</h2>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Danh sách Mẫu chấm</h5>
+                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#templateModal" onclick="openTemplateModal()">
+                                <i class="bi bi-plus-circle"></i> Tạo Mẫu mới
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="template-list" class="table-responsive">
+                                <!-- Template list will be rendered here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Criteria Manager Section -->
+        <section id="criteria" class="content-section">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="mb-3"><i class="bi bi-list-check"></i> Quản lý Chi tiết Tiêu chí</h2>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="card bg-light">
+                        <div class="card-body py-2">
+                            <div class="row align-items-center">
+                                <div class="col-md-4">
+                                    <label class="form-label small mb-0">Lọc theo Nhóm tiêu chí:</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <select class="form-select form-select-sm" id="filter-category" onchange="CriteriaManager.filterByCategory()">
+                                        <option value="">-- Tất cả nhóm --</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Danh sách Tiêu chí</h5>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#criteriaModal" onclick="openCriteriaModal()">
+                                <i class="bi bi-plus-circle"></i> Thêm Tiêu chí mới
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="criteria-list" class="table-responsive">
+                                <!-- Criteria list will be rendered here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Score Generator Section -->
+        <section id="generator" class="content-section">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="mb-4"><i class="bi bi-calculator"></i> Tạo Bảng điểm</h2>
+                </div>
+            </div>
+            
+            <!-- Configuration Form -->
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="card sticky-top" style="top: 80px; max-height: calc(100vh - 100px);">
+                        <div class="card-header bg-primary text-white">
+                            <h6 class="mb-0"><i class="bi bi-gear"></i> Cấu hình</h6>
+                        </div>
+                        <div class="card-body p-3" style="overflow-y: auto; max-height: calc(100vh - 160px);">
+                            <form id="score-config-form">
+                                <!-- Template Selection -->
+                                <div class="mb-2">
+                                    <label class="form-label small mb-1"><strong>Mẫu chấm</strong> <span class="text-danger">*</span></label>
+                                    <select class="form-select form-select-sm" id="select-template" required onchange="updateRealtimePreview()">
+                                        <option value="">-- Chọn mẫu --</option>
+                                    </select>
+                                </div>
+
+                                <!-- Course Info -->
+                                <div class="mb-2">
+                                    <label class="form-label small mb-1"><strong>Học phần</strong> <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control form-control-sm" id="input-course" placeholder="VD: Lập trình di động" required onchange="updateRealtimePreview()">
+                                </div>
+
+                                <div class="row mb-2">
+                                    <div class="col-8">
+                                        <label class="form-label small mb-1"><strong>Lớp</strong> <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm" id="input-class" placeholder="VD: 22DTHE6" required onchange="updateRealtimePreview()">
+                                    </div>
+                                    <div class="col-4">
+                                        <label class="form-label small mb-1"><strong>Nhóm</strong></label>
+                                        <input type="text" class="form-control form-control-sm" id="input-group" placeholder="33" onchange="updateRealtimePreview()">
+                                    </div>
+                                </div>
+
+                                <!-- Algorithm Selection -->
+                                <div class="mb-2">
+                                    <label class="form-label small mb-1"><strong>Thuật toán</strong> <span class="text-danger">*</span></label>
+                                    <select class="form-select form-select-sm" id="select-algorithm" required onchange="updateRealtimePreview()">
+                                        <option value="even">Phân bổ đều</option>
+                                        <option value="random">Ngẫu nhiên</option>
+                                        <option value="weighted">Theo trọng số</option>
+                                    </select>
+                                </div>
+
+                                <!-- Display Options -->
+                                <div class="mb-2">
+                                    <label class="form-label small mb-1"><strong>Tùy chọn hiển thị</strong></label>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="check-show-calc" checked onchange="updateRealtimePreview()">
+                                        <label class="form-check-label small" for="check-show-calc">Tính tổng</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="check-show-diff" checked onchange="updateRealtimePreview()">
+                                        <label class="form-check-label small" for="check-show-diff">Chênh lệch</label>
+                                    </div>
+                                </div>
+
+                                <hr class="my-2">
+
+                                <!-- Import Students -->
+                                <div class="mb-2">
+                                    <label class="form-label small mb-1"><strong>Danh sách sinh viên</strong></label>
+                                    <div class="d-grid gap-1">
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#importStudentsModal">
+                                            <i class="bi bi-file-earmark-arrow-up"></i> Import Excel
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#pasteStudentsModal">
+                                            <i class="bi bi-clipboard"></i> Paste dữ liệu
+                                        </button>
+                                    </div>
+                                    <div id="student-count-display" class="mt-1 p-2 bg-light rounded small text-center"></div>
+                                </div>
+
+                                <hr class="my-2">
+
+                                <div class="d-grid gap-1">
+                                    <button type="button" class="btn btn-success btn-sm" onclick="generateScores()">
+                                        <i class="bi bi-play-circle"></i> Tạo bảng điểm
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearGenerator()">
+                                        <i class="bi bi-arrow-clockwise"></i> Làm mới
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0"><i class="bi bi-eye"></i> Xem trước Bảng điểm</h6>
+                                <div class="input-group" style="max-width: 300px;">
+                                    <span class="input-group-text bg-white border-end-0">
+                                        <i class="bi bi-search"></i>
+                                    </span>
+                                    <input type="text" class="form-control border-start-0 ps-0" id="search-preview" 
+                                           placeholder="Tìm MSSV hoặc họ tên..." 
+                                           onkeyup="searchPreview(this.value)">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body p-2">
+                            <div id="preview-container">
+                                <div class="text-center text-muted py-5">
+                                    <i class="bi bi-table fs-2"></i>
+                                    <p class="mt-3 small">Chọn mẫu và nhập thông tin bên trái để xem trước...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- History Section -->
+        <section id="history" class="content-section">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="mb-4"><i class="bi bi-clock-history"></i> Lịch sử</h2>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Danh sách lịch sử thực hiện</h5>
+                            <div>
+                                <button class="btn btn-danger" onclick="HistoryManager.clearAllHistory()">
+                                    <i class="bi bi-trash"></i> Xóa tất cả
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="history-list">
+                                <!-- History list will be rendered here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Category Modal -->
+    <div class="modal fade" id="categoryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tạo/Chỉnh sửa Nhóm tiêu chí</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="category-form">
+                        <input type="hidden" id="category-id">
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Tên Nhóm tiêu chí <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="category-name" required placeholder="VD: Chấm điểm Đồ án Học kỳ 1">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Mô tả</label>
+                            <textarea class="form-control" id="category-description" rows="3" placeholder="Mô tả chi tiết về nhóm tiêu chí này..."></textarea>
+                        </div>
+
+                        <div class="alert alert-info small">
+                            <i class="bi bi-info-circle"></i>
+                            Sau khi tạo nhóm, bạn có thể thêm các tiêu chí đánh giá vào nhóm này. 
+                            Tổng tỷ lệ % của các tiêu chí trong nhóm phải bằng 100%.
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="saveCategory()">Lưu Nhóm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Template Modal -->
+    <div class="modal fade" id="templateModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tạo/Chỉnh sửa Mẫu chấm CLO</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <form id="template-form">
+                                <input type="hidden" id="template-id">
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Tên Mẫu <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control form-control-sm" id="template-name" required onchange="TemplateManager.updatePreview()">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Nhóm tiêu chí <span class="text-danger">*</span></label>
+                                    <select class="form-select form-select-sm" id="template-category" required onchange="TemplateManager.updatePreview()">
+                                        <option value="">-- Chọn nhóm tiêu chí --</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Mô tả</label>
+                                    <textarea class="form-control form-control-sm" id="template-description" rows="2"></textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Tiêu đề trường (Dòng 1)</label>
+                                    <input type="text" class="form-control form-control-sm" id="template-title-1" placeholder="VD: TRƯỜNG ĐẠI HỌC CÔNG NGHỆ TP.HCM" onchange="TemplateManager.updatePreview()">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Tiêu đề khoa (Dòng 2)</label>
+                                    <input type="text" class="form-control form-control-sm" id="template-title-2" placeholder="VD: KHOA CÔNG NGHỆ THÔNG TIN" onchange="TemplateManager.updatePreview()">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Các cột bổ sung (JSON)</label>
+                                    <textarea class="form-control form-control-sm font-monospace" id="template-columns" rows="3" placeholder='["STT", "MÃ SV", "Họ và tên"]' onchange="TemplateManager.updatePreview()"></textarea>
+                                    <div class="form-text small">Nhập mảng JSON các tên cột cần hiển thị</div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="mb-2">Xem thử Mẫu:</h6>
+                            <div id="template-preview" class="border rounded p-2" style="max-height: 500px; overflow-y: auto; background: #f8f9fa;">
+                                <p class="text-muted text-center small">Điền thông tin bên trái để xem xem thử...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="saveTemplate()">Lưu Mẫu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Criteria Modal -->
+    <div class="modal fade" id="criteriaModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Thêm/Chỉnh sửa Tiêu chí</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="criteria-form">
+                        <input type="hidden" id="criteria-id">
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Nhóm tiêu chí <span class="text-danger">*</span></label>
+                            <select class="form-select form-select-sm" id="criteria-category" required>
+                                <option value="">-- Chọn nhóm tiêu chí --</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Tên tiêu chí <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-sm" id="criteria-name" required placeholder="VD: Nội dung bài trình bày">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Tỷ lệ % <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-sm" id="criteria-percentage" required placeholder="50">
+                            <div class="form-text small">Có thể dùng dấu chấm (.) hoặc phẩy (,)</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">CLO <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-sm" id="criteria-clo" required placeholder="VD: CLO2">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Mô tả</label>
+                            <textarea class="form-control form-control-sm" id="criteria-description" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="saveCriteria()">Lưu Tiêu chí</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Students Modal -->
+    <div class="modal fade" id="importStudentsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Import Sinh viên từ Excel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Chọn file Excel</label>
+                        <input type="file" class="form-control" id="file-import-students" accept=".xlsx,.xls">
+                        <div class="form-text">File Excel cần có 2 cột: MSSV và Họ tên</div>
+                    </div>
+                    <div id="import-preview" class="mt-3">
+                        <!-- Preview will be shown here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" onclick="confirmImportStudents()">Xác nhận</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Paste Students Modal -->
+    <div class="modal fade" id="pasteStudentsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Paste Danh sách Sinh viên</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Dán dữ liệu (MSSV, Họ tên, Điểm - cách nhau bởi tab hoặc dấu phẩy)</label>
+                        <textarea class="form-control font-monospace" id="textarea-paste-students" rows="10" placeholder="2280618256	Lý Thuận An	9.0&#10;2280600103	Nguyễn Võ Hoàng Anh	6.5"></textarea>
+                        <div class="form-text">Mỗi dòng là 1 sinh viên. Có thể copy trực tiếp từ Excel.</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" onclick="confirmPasteStudents()">Xác nhận</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SheetJS for import -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- ExcelJS for export with styling -->
+    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+    <!-- html2pdf for PDF export with Vietnamese support -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="js/storage.js"></script>
+    <script src="js/category-manager.js"></script>
+    <script src="js/template-manager.js"></script>
+    <script src="js/criteria-manager.js"></script>
+    <script src="js/score-calculator.js"></script>
+    <script src="js/excel-handler.js"></script>
+    <script src="js/excel-exporter.js"></script>
+    <script src="js/ui-manager.js"></script>
+    <script src="js/result-manager.js"></script>
+    <script src="js/history-manager.js"></script>
+    <script src="js/app-new.js"></script>
+</body>
+</html>
