@@ -108,18 +108,26 @@ const ScoreCalculator = {
             
             const totalScore = parseFloat(student.score) || 0;
             
+            // Special case: totalScore = 0, all criteria scores should be 0
             let criteriaScores;
-            switch (algorithm) {
-                case 'random':
-                    criteriaScores = this.randomDistribution(totalScore, criteria);
-                    break;
-                case 'weighted':
-                    criteriaScores = this.weightedDistribution(totalScore, criteria);
-                    break;
-                case 'even':
-                default:
-                    criteriaScores = this.evenDistribution(totalScore, criteria);
-                    break;
+            if (totalScore === 0) {
+                criteriaScores = {};
+                criteria.forEach(criterion => {
+                    criteriaScores[criterion.id] = 0;
+                });
+            } else {
+                switch (algorithm) {
+                    case 'random':
+                        criteriaScores = this.randomDistribution(totalScore, criteria);
+                        break;
+                    case 'weighted':
+                        criteriaScores = this.weightedDistribution(totalScore, criteria);
+                        break;
+                    case 'even':
+                    default:
+                        criteriaScores = this.evenDistribution(totalScore, criteria);
+                        break;
+                }
             }
 
             // Tính điểm sau khi nhân hệ số
@@ -190,44 +198,53 @@ const ScoreCalculator = {
             
             const targetScore = parseFloat(student.score) || 0;
             
-            // Khởi tạo điểm ban đầu (tất cả bằng target)
+            // Special case: targetScore = 0, all criteria scores should be 0
             let bestScores = {};
-            criteria.forEach(criterion => {
-                bestScores[criterion.id] = targetScore;
-            });
-
-            let bestDiff = Infinity;
-
-            // Thử nhiều lần để tìm bộ điểm tốt nhất
-            for (let iter = 0; iter < maxIterations; iter++) {
-                const currentScores = {};
-                
+            let bestDiff = 0;
+            
+            if (targetScore === 0) {
                 criteria.forEach(criterion => {
-                    // Tạo điểm ngẫu nhiên trong khoảng hợp lý
-                    const min = Math.max(0, targetScore - 2);
-                    const max = Math.min(10, targetScore + 2);
-                    const randomScore = min + Math.random() * (max - min);
-                    currentScores[criterion.id] = this.roundToHalf(randomScore);
+                    bestScores[criterion.id] = 0;
+                });
+            } else {
+                // Khởi tạo điểm ban đầu (tất cả bằng target)
+                criteria.forEach(criterion => {
+                    bestScores[criterion.id] = targetScore;
                 });
 
-                // Tính tổng sau khi nhân %
-                let total = 0;
-                criteria.forEach(criterion => {
-                    total += currentScores[criterion.id] * (criterion.percentage / 100);
-                });
-                total = this.roundToHalf(total);
+                bestDiff = Infinity;
 
-                const diff = Math.abs(total - targetScore);
+                // Thử nhiều lần để tìm bộ điểm tốt nhất
+                for (let iter = 0; iter < maxIterations; iter++) {
+                    const currentScores = {};
+                    
+                    criteria.forEach(criterion => {
+                        // Tạo điểm ngẫu nhiên trong khoảng hợp lý
+                        const min = Math.max(0, targetScore - 2);
+                        const max = Math.min(10, targetScore + 2);
+                        const randomScore = min + Math.random() * (max - min);
+                        currentScores[criterion.id] = this.roundToHalf(randomScore);
+                    });
 
-                // Nếu tìm được bộ điểm tốt hơn
-                if (diff < bestDiff) {
-                    bestDiff = diff;
-                    bestScores = { ...currentScores };
-                }
+                    // Tính tổng sau khi nhân %
+                    let total = 0;
+                    criteria.forEach(criterion => {
+                        total += currentScores[criterion.id] * (criterion.percentage / 100);
+                    });
+                    total = this.roundToHalf(total);
 
-                // Nếu đã đạt điểm chính xác thì dừng
-                if (diff === 0) {
-                    break;
+                    const diff = Math.abs(total - targetScore);
+
+                    // Nếu tìm được bộ điểm tốt hơn
+                    if (diff < bestDiff) {
+                        bestDiff = diff;
+                        bestScores = { ...currentScores };
+                    }
+
+                    // Nếu đã đạt điểm chính xác thì dừng
+                    if (diff === 0) {
+                        break;
+                    }
                 }
             }
 
