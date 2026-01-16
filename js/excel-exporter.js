@@ -219,7 +219,7 @@ const ExcelExporter = {
         // Merge cells for date
         worksheet.mergeCells(`${this.getColumnLetter(dateColStart)}${signatureStartRow}:${lastColLetter}${signatureStartRow}`);
         const dateCell = signatureRow.getCell(dateColStart);
-        dateCell.value = `Tp.Hồ Chí Minh, ngày ..... tháng ..... năm 2025`;
+        dateCell.value = `Tp.Hồ Chí Minh, ngày ..... tháng ..... năm .....`;
         dateCell.font = { name: 'Times New Roman', size: 11, italic: true };
         dateCell.alignment = { horizontal: 'center', vertical: 'middle' };
         
@@ -370,7 +370,7 @@ const ExcelExporter = {
         
         // Add signature section
         csv += '\n';
-        csv += ',,,,,,Tp.Hồ Chí Minh ngày ..... tháng ..... năm 2025\n';
+        csv += ',,,,,,Tp.Hồ Chí Minh ngày ..... tháng ..... năm .....\n';
         csv += 'Giảng viên chấm 2,,,,,,Giảng viên chấm 1\n';
         
         // Create blob and download
@@ -672,7 +672,7 @@ const ExcelExporter = {
                 
                 <div style="margin-top: 20px;">
                     <div style="text-align: right; font-style: italic; font-size: 10px; margin-bottom: 10px;">
-                        Tp.Hồ Chí Minh, ngày ..... tháng ..... năm 2025
+                        Tp.Hồ Chí Minh, ngày ..... tháng ..... năm ......
                     </div>
                     <table style="width: 100%; border: none;">
                         <tr>
